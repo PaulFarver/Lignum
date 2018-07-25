@@ -1,0 +1,12 @@
+version: "3"
+services:
+  backend:
+    build:
+      context: golang
+    volumes:
+      - "./data/output.json:/data/output.json"
+    command:
+      - ./app
+      - --data=/data/output.json
+    ports:
+      - 8080:80
