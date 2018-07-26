@@ -23,7 +23,12 @@ type Name struct {
 	Name     string `json:"name"`
 }
 
+type Health struct {
+	Status string `json:"status"`
+}
+
 var trees []Tree
+var indicies map[string][]int
 
 func check(e error) {
 	if e != nil {
@@ -39,28 +44,45 @@ func readFromFile(path string) []Tree {
 	return data
 }
 
-func getRandomTree(lang []string) Tree {
-	if len(lang) == 0 {
-		lang = append(lang, "en")
+func indexByLang(trees []Tree) map[string][]int {
+	arrays := make(map[string][]int)
+	for i, t := range trees {
+		set := make(map[string]struct{})
+		for _, n := range t.CommonNames {
+			set[n.Language] = struct{}{}
+		}
+		for l := range set {
+			arrays[l] = append(arrays[l], i)
+		}
 	}
-	t := trees[rand.Intn(len(trees))]
+	return arrays
+}
+
+func getRandomTree(trees []Tree, lang string, indicies map[string][]int) Tree {
+	i := indicies[lang][rand.Intn(len(indicies[lang]))]
+	t := trees[i]
 	return t
 }
 
 func getShortName(w http.ResponseWriter, r *http.Request) {
-	// fmt.Println("path", r.URL.Path)
-	// lang := r.URL.Query().Get("language")
-	// allowEmpty := r.URL.Query().Get("allowEmptyLang")
-	lang, l := r.URL.Query()["language"]
+	lang := r.URL.Query().Get("language")
 	for k, v := range r.Form {
 		fmt.Println("key:", k)
 		fmt.Println("val:", strings.Join(v, ""))
 	}
 	w.Header().Set("Content-Type", "application/json")
-	t := getRandomTree(lang)
-	// fmt.Println(getKey(t))
-	// fmt.Println(getNames(getKey(t)))
-	// t.CommonName = getNames(getKey(t))
+	t := getRandomTree(trees, lang, indicies)
+	str, err := json.Marshal(t)
+	check(err)
+	fmt.Fprintf(w, string(str))
+}
+
+func getHealth(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	t := Health{
+		Status: "healthy",
+	}
 	str, err := json.Marshal(t)
 	check(err)
 	fmt.Fprintf(w, string(str))
@@ -68,14 +90,19 @@ func getShortName(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	datafile := flag.String("data", "data.json", "The file with data in it")
+	port := flag.String("port", "80", "The port to listen on")
 
 	flag.Parse()
 
-	fmt.Println("data: ", *datafile)
+	fmt.Println("Reading data from: ", *datafile)
 	trees = readFromFile(*datafile)
+	fmt.Println("Generating indicies...")
+	indicies = indexByLang(trees)
 
-	http.HandleFunc("/tree", getShortName)   // set router
-	err := http.ListenAndServe(":8080", nil) // set listen port
+	http.HandleFunc("/tree", getShortName) // set router
+	http.HandleFunc("/healthz", getHealth)
+	fmt.Println("Listening on port " + *port)
+	err := http.ListenAndServe(":"+*port, nil) // set listen port
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
