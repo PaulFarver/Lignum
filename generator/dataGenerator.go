@@ -253,10 +253,10 @@ func removeEmpty(trees []Tree) []Tree {
 }
 
 func main() {
-	datafile := flag.String("taxon", "Taxon.tsv", "Main dataset")
-	treefile := flag.String("trees", "global_tree_search_trees_1_2.csv", "Dataset with trees")
-	namefile := flag.String("names", "VernacularName.tsv", "Names dataset")
-	output := flag.String("output", "output.json", "File with output data")
+	datafile := flag.String("taxon", "../data/Taxon.tsv", "Main dataset")
+	treefile := flag.String("trees", "../data/global_tree_search_trees_1_2.csv", "Dataset with trees")
+	namefile := flag.String("names", "../data/VernacularName.tsv", "Names dataset")
+	output := flag.String("output", "../data/data.json", "File with output data")
 
 	flag.Parse()
 

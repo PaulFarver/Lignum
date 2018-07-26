@@ -7,5 +7,5 @@ FROM alpine
 EXPOSE 80
 WORKDIR /tree
 COPY --from=0 /tree/app .
-COPY data/output.json /data/data.json
+COPY data/data.json /data/data.json
 CMD [ "./app", "--data=/data/data.json"]
