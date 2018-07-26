@@ -92,7 +92,7 @@ func getHealth(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	datafile := flag.String("data", "data.json", "The file with data in it")
+	datafile := flag.String("data", "/data/data.json", "The file with data in it")
 	port := flag.String("port", "80", "The port to listen on")
 
 	flag.Parse()
