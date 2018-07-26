@@ -11,6 +11,7 @@ import (
 	"strings"
 )
 
+// Tree contains info on a species of trees
 type Tree struct {
 	TaxonIDS    []string `json:"taxonIds"`
 	Genus       string   `json:"genus"`
@@ -18,11 +19,13 @@ type Tree struct {
 	CommonNames []Name   `json:"commonNames"`
 }
 
+// Name contains information on a name and its origin
 type Name struct {
 	Language string `json:"language"`
 	Name     string `json:"name"`
 }
 
+// Health is a response containing a status on the application
 type Health struct {
 	Status string `json:"status"`
 }

@@ -1,2 +1,3 @@
 .vscode
-data
+data/*
+!data/data.json
