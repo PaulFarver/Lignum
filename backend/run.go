@@ -74,6 +74,7 @@ func getShortName(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("val:", strings.Join(v, ""))
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	t := getRandomTree(trees, lang, indicies)
 	str, err := json.Marshal(t)
 	check(err)
@@ -81,6 +82,7 @@ func getShortName(w http.ResponseWriter, r *http.Request) {
 }
 
 func getHealth(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Requested health")
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	t := Health{
